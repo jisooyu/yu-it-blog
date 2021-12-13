@@ -3,7 +3,7 @@ const app = express();
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const userRouter = require("./routers/user");
-const postRouter = require("./routers/post");
+const blogRouter = require("./routers/blog");
 const categoryRouter = require("./routers/category");
 const multer = require("multer");
 const path = require("path");
@@ -37,7 +37,7 @@ app.post("/api/upload", upload.single("file"), (req, res) => {
 });
 
 app.use(userRouter);
-app.use(postRouter);
+app.use(blogRouter);
 app.use(categoryRouter);
 
 app.listen("5000", () => {

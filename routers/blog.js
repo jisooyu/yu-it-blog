@@ -1,46 +1,33 @@
 const express = require('express')
 const router = new express.Router();
-const Post = require("../models/post");
+const Blog = require("../models/blog");
 const auth = require('../middleware/auth')
 
-//CREATE POST
+//CREATE BLOGS
 router.post('/post', auth, async (req, res)=> {
-  const post = new Post({
+  const blog = new Blog({
       ...req.body,
       postedBy: req.user._id
   })
   try {
-      await post.save()
-      res.status(201).send(post)
+      await blog.save()
+      res.status(201).send(blog)
   } catch(e){
       res.status(400).send(e)
   }
 })
 
-//POPULATE POSTS AND GET ALL POSTS
+//POPULATE BLOGS AND GET ALL BLOGS
 router.get('/post', auth, async (req, res) => {
-  // try {
-  //     await req.user.populate( {
-  //         path:'posts',
-  //         options:{
-  //             limit: parseInt(req.query.limit),
-  //             skip: parseInt(req.query.skip)
-  //         }
-  //     })
-  //     res.send(req.user.posts)
-  // } catch (e) {
-  //     res.status(500).send()
-  // }
-
   try{
-    const foundPosts = await Post.find({postedBy: req.user._id})
-    res.send(foundPosts)
+    const blogs = await Blog.find({postedBy: req.user._id})
+    res.send(blogs)
   } catch (e) {
     res.status(500).send()
   }
 })
 
-//UPDATE POST
+//UPDATE BLOG
 router.patch("/post/:id", auth, async (req, res) => {
   const updates = Object.keys(req.body)
   const allowUpdates = ['title', 'description', 'photo', 'categories']
@@ -52,18 +39,18 @@ router.patch("/post/:id", auth, async (req, res) => {
   }
 
   try {
-    const post = await Post.findOne({
+    const blog = await Blog.findOne({
       _id: req.params.id,
       postedBy: req.user._id
     })
 
-    if(!post){
+    if(!blog){
       return res.status(404).send()
     }
 
-    updates.forEach((update)=> {post[update] = req.body[update]})
-    await post.save()
-    res.send(post)
+    updates.forEach((update)=> {blog[update] = req.body[update]})
+    await blog.save()
+    res.send(blog)
 
   } catch (e){
     res.status(500).send()
@@ -73,12 +60,12 @@ router.patch("/post/:id", auth, async (req, res) => {
 //DELETE POST
 router.delete("/post/:id", auth, async (req, res) => {
   try {
-    const post = await Post.findOneAndDelete({_id: req.params.id, postedBy: req.user._id});
+    const blog = await Blog.findOneAndDelete({_id: req.params.id, postedBy: req.user._id});
 
-    if (!post){
+    if (!blog){
       return res.status(404).send()
     }
-    res.send(post)
+    res.send(blog)
   } catch (err) {
     res.status(500).json(err);
   }
@@ -87,8 +74,8 @@ router.delete("/post/:id", auth, async (req, res) => {
 //GET POST
 router.get("/post/:id", auth, async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
-    res.status(200).json(post);
+    const blog = await Blog.findById(req.params.id);
+    res.status(200).json(blog);
   } catch (err) {
     res.status(500).json(err);
   }

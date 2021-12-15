@@ -2,11 +2,14 @@ const express = require('express')
 const router = new express.Router();
 const Blog = require("../models/blog");
 const auth = require('../middleware/auth')
+const uploadImage = require('../middleware/uploadImage')
+const uploadFile = require('../middleware/uploadFile')
 
 //CREATE BLOGS
-router.post('/post', auth, async (req, res)=> {
+router.post('/post', auth,  uploadImage.single('uploadImage'), uploadFile.single('uploadFile'), async (req, res)=> {
   const blog = new Blog({
       ...req.body,
+      photo: req.file.buffer,
       postedBy: req.user._id
   })
   try {
@@ -17,7 +20,7 @@ router.post('/post', auth, async (req, res)=> {
   }
 })
 
-//POPULATE BLOGS AND GET ALL BLOGS
+//POPULATE BLOGS AND GET ALL BLOGS (fail to populate yet)
 router.get('/post', auth, async (req, res) => {
   try{
     const blogs = await Blog.find({postedBy: req.user._id})
@@ -27,7 +30,7 @@ router.get('/post', auth, async (req, res) => {
   }
 })
 
-//UPDATE BLOG
+//UPDATE BLOG -- 어떻게 photo & doc을 변경할 수 있을 까??
 router.patch("/post/:id", auth, async (req, res) => {
   const updates = Object.keys(req.body)
   const allowUpdates = ['title', 'description', 'photo', 'categories']
@@ -67,7 +70,7 @@ router.delete("/post/:id", auth, async (req, res) => {
     }
     res.send(blog)
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).json();
   }
 });
 
@@ -75,10 +78,32 @@ router.delete("/post/:id", auth, async (req, res) => {
 router.get("/post/:id", auth, async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id);
-    res.status(200).json(blog);
+    res.status(200).send(blog);
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).send();
   }
 });
+
+// upload image(jpg, jpeg, png)
+router.post('/post/photo/:id', auth, uploadImage.single('uploadImage'), async(req, res)=>{
+  // user의 blog를 find해서 upload
+  const blog = await Blog.findOne({_id: req.params.id , postedBy: req.user._id})
+  blog.photo = req.file.buffer
+  await blog.save()
+  res.send()
+}, (error, req, res, next) => {
+  res.status(400).send({error: error.message})
+}
+)
+
+// upload word/pdf/hwp file
+router.post('/post/doc/:id', auth, uploadFile.single('uploadFile'), async(req, res)=>{
+  const blog = await Blog.findOne({_id: req.params.id, postedBy: req.user._id})
+  blog.doc = req.file.buffer
+  await blog.save()
+  res.send()
+}, (error, req, res, next)=>{
+  res.status(400).send({error: error.message})
+})
 
 module.exports = router;

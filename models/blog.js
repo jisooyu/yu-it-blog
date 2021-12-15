@@ -12,7 +12,10 @@ const blogSchema = new mongoose.Schema(
       required: true,
     },
     photo: {
-      type: String
+      type: Buffer
+    },
+    doc: {
+      type: Buffer
     },
     postedBy: {
       type: mongoose.Schema.Types.ObjectId,
@@ -24,6 +27,7 @@ const blogSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
 
 const Blog =  mongoose.model("Blog", blogSchema);
 

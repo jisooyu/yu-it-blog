@@ -4,12 +4,14 @@ const Blog = require("../models/blog");
 const auth = require('../middleware/auth')
 const uploadImage = require('../middleware/uploadImage')
 const uploadFile = require('../middleware/uploadFile')
+const uploadFields = require('../middleware/uploadFields')
 
 //CREATE BLOGS
-router.post('/post', auth,  uploadImage.single('uploadImage'), uploadFile.single('uploadFile'), async (req, res)=> {
+router.post('/post', auth, uploadFields.fields([{name: 'photo', maxCount: 3}, {name: 'doc', maxCount: 1}]), async (req, res)=> {
   const blog = new Blog({
       ...req.body,
-      photo: req.file.buffer,
+      photos: req.files['photo'][0].buffer,
+      docs: req.files['doc'][0].buffer,
       postedBy: req.user._id
   })
   try {
@@ -33,7 +35,7 @@ router.get('/post', auth, async (req, res) => {
 //UPDATE BLOG -- 어떻게 photo & doc을 변경할 수 있을 까??
 router.patch("/post/:id", auth, async (req, res) => {
   const updates = Object.keys(req.body)
-  const allowUpdates = ['title', 'description', 'photo', 'categories']
+  const allowUpdates = ['title', 'description', 'categories']
 
   const isValidOperation = updates.every((update)=> allowUpdates.includes(update))
 
@@ -70,7 +72,7 @@ router.delete("/post/:id", auth, async (req, res) => {
     }
     res.send(blog)
   } catch (err) {
-    res.status(500).json();
+    res.status(500).send();
   }
 });
 

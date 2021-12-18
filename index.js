@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const userRouter = require("./routers/user");
 const blogRouter = require("./routers/blog");
 const categoryRouter = require("./routers/category");
-const multer = require("multer");
+// const multer = require("multer");
 const path = require("path");
 
 dotenv.config();
@@ -22,19 +22,19 @@ mongoose
   .then(console.log("Connected to MongoDB"))
   .catch((err) => console.log(err));
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "images");
-  },
-  filename: (req, file, cb) => {
-    cb(null, req.body.name);
-  },
-});
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, "images");
+//   },
+//   filename: (req, file, cb) => {
+//     cb(null, req.body.name);
+//   },
+// });
 
-const upload = multer({ storage: storage });
-app.post("/api/upload", upload.single("file"), (req, res) => {
-  res.status(200).json("File has been uploaded");
-});
+// const upload = multer({ storage: storage });
+// app.post("/api/upload", upload.single("file"), (req, res) => {
+//   res.status(200).json("File has been uploaded");
+// });
 
 app.use(userRouter);
 app.use(blogRouter);

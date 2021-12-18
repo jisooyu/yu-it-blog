@@ -2,6 +2,7 @@ const express = require('express')
 const router = new express.Router()
 const User = require("../models/user");
 const auth = require('../middleware/auth')
+const uploadImage = require('../middleware/uploadImage')
 
 //REGISTER
 router.post("/user/register", async (req, res) => {
@@ -57,7 +58,7 @@ router.get('/user/me', auth, async (req, res) => {
   res.send(req.user)
 })
 
-//UPDATE
+//UPDATE USERNAME, EMAIL, PASSWORD
 router.patch("/user/me", auth, async (req, res) => {
   const updates = Object.keys(req.body)
   const allowedUpdates = ['username', 'email', 'password']
@@ -75,6 +76,9 @@ router.patch("/user/me", auth, async (req, res) => {
       res.status(400).send('update failed')
   }
 })
+
+// UPDATE PROFILE PIC
+
 
 //DELETE
 router.delete("/user/me", auth, async (req, res) => {
@@ -96,5 +100,14 @@ router.get("/user", auth, async (req, res) => {
     res.status(500).json(err);
   }
 });
+
+// UPLOAD PROFILE IMAGE
+router.post('/user/me/picture', auth, uploadImage.single('upload'),async ( req, res)=>{
+  req.user.profilePic = req.file.buffer
+  await req.user.save()
+  res.status(200).send()
+}, (error, req, res)=>{
+  res.status(400).send({error: error.message})
+})
 
 module.exports = router;

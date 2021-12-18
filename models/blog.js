@@ -11,11 +11,11 @@ const blogSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    photo: {
-      type: Buffer
+    photos: {
+        type: Buffer
     },
-    doc: {
-      type: Buffer
+    docs: {
+        type: Buffer
     },
     postedBy: {
       type: mongoose.Schema.Types.ObjectId,

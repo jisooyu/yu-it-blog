@@ -33,25 +33,18 @@ const userSchema = new mongoose.Schema(
         }
     }
     },
-    profilePic: {
-      type: String,
-      default: "",
-    },
     tokens:[{
       token: {
         type: String,
         required: true
       }
-    }]
-  },
-  { 
+    }],
+    profilePic: {
+      type: Buffer
+    }
+  },{ 
     timestamps: true 
-  }, 
-  {
-    toJSON: {virtuals: true},
-    toObject: {virtuals: true}
-  }
-);
+});
 
 // establish the virtual link with posts
 userSchema.virtual('posts', {

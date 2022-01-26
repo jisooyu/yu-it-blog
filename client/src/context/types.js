@@ -1,3 +1,6 @@
+export const GET_BLOGS = 'GET_BLOGS';
+export const ADD_BLOGS = 'ADD_BLOGS';
+export const UPDATE_BLOGS = 'UPDATE_BLOGS';
 export const REGISTER_SUCCESS = 'REGISTER_SUCCESS';
 export const REGISTER_FAIL = 'REGISTER_FAIL';
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS';

@@ -1,3 +1,4 @@
 node_modules
 .env
-/config/dev.js
+config/dev.js
+config/default.json

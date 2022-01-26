@@ -1,45 +1,26 @@
-const express = require("express");
+const express = require('express');
 const app = express();
-const dotenv = require("dotenv");
-const mongoose = require("mongoose");
-const userRouter = require("./routers/user");
-const blogRouter = require("./routers/blog");
-const categoryRouter = require("./routers/category");
+const connectDB = require('./config/db');
 // const multer = require("multer");
-const path = require("path");
+const path = require('path');
 
-dotenv.config();
-app.use(express.json());
-app.use("/images", express.static(path.join(__dirname, "/images")));
+// Connect Database
+connectDB();
 
-mongoose
-  .connect(process.env.MONGO_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-    useFindAndModify:true
-  })
-  .then(console.log("Connected to MongoDB"))
-  .catch((err) => console.log(err));
+// Init Middleware
+app.use(express.json({ extended: false }));
 
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, "images");
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, req.body.name);
-//   },
-// });
+// define the image path
+app.use('/images', express.static(path.join(__dirname, '/images')));
 
-// const upload = multer({ storage: storage });
-// app.post("/api/upload", upload.single("file"), (req, res) => {
-//   res.status(200).json("File has been uploaded");
-// });
+// Define routes
+app.use('/api/users', require('./routes/users'));
+app.use('/api/blog', require('./routes/blog'));
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/category', require('./routes/category'));
 
-app.use(userRouter);
-app.use(blogRouter);
-app.use(categoryRouter);
+const PORT = process.env.PORT || 5000;
 
-app.listen("5000", () => {
-  console.log("Backend is running at 5000");
+app.listen(PORT, () => {
+  console.log(`Backend is running at ${PORT}`);
 });
